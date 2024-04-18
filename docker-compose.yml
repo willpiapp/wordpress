@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    #image: wordpress:php8.3
+    #image: wordpress:4.8
+    #image: wordpress:6.5
+    #image: wordpress:6.5.2
+    image: wordpress:6.4.2
+    #image: wordpress:latest
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: 43u89gerf598ju0igertjio34r089iu25r409
+      WORDPRESS_DB_NAME: exampledb
+      WORDPRESS_DEBUG: true
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_MAX_MEMORY_LIMIT', '256M');
+        @ini_set('upload_max_filesize' , '128M' );
+        @ini_set('post_max_size', '128M');
+    volumes:
+      - wordpress:/var/www/html
+      - ./php.ini:/usr/local/etc/php/conf.d/php.ini
+
+  db:
+    #image: mysql:8
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: 43u89gerf598ju0igertjio34r089iu25r409
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      #MYSQL_INITDB_SKIP_TZINFO: '1'
+      #innodb_force_recovery: 1
+    volumes:
+      - db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: db
+      PMA_USER: exampleuser
+      PMA_PASSWORD: 43u89gerf598ju0igertjio34r089iu25r409
+    depends_on:
+      - db
+
+
+
+volumes:
+  wordpress:
+  db:
